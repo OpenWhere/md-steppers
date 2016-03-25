@@ -121,6 +121,7 @@ function MdSteppers() {
                       '\'md-no-scroll\':     $mdSteppersCtrl.dynamicHeight ' ,
                     '}"> ' ,
                   '<div ' ,
+                      'style="height: 100%"',   // OpenWhere changed this for angular-leaflet maps
                       'md-steppers-template="::step.template" ' ,
                       'md-connected-if="step.isActive()" ' ,
                       'md-scope="::step.parent" ' ,

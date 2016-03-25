@@ -6,8 +6,8 @@
 */
 
 MdSteppersController.$inject = ["$scope", "$element", "$window", "$mdConstant", "$mdStepInkRipple", "$mdUtil", "$animateCss", "$attrs", "$compile", "$mdTheming"];
-MdSteppersTemplate.$inject = ["$compile", "$mdUtil"];
 MdStepScroll.$inject = ["$parse"];
+MdSteppersTemplate.$inject = ["$compile", "$mdUtil"];
 angular.module('md-steppers', [
   'material.core',
   'material.components.icon']);
@@ -126,6 +126,59 @@ function MdStepLabel() {
     return { terminal: true };
 }
 
+
+(function () {
+    'use strict';
+
+    /**
+   * @ngdoc service
+   * @name $mdStepInkRipple
+   * @module md-steppers
+   *
+   * @description
+   * TODO DOCS
+   *
+   */
+
+    MdStepInkRipple.$inject = ["$mdInkRipple"];
+    angular.module('md-steppers')
+      .factory('$mdStepInkRipple', MdStepInkRipple);
+
+    /**
+    * @ngInject
+    */
+    function MdStepInkRipple($mdInkRipple) {
+        return {
+            attach: attach
+        };
+
+        function attach(scope, element, options) {
+            return $mdInkRipple.attach(scope, element, angular.extend({
+                center: false,
+                dimBackground: true,
+                outline: false,
+                rippleSize: 'full'
+            }, options));
+        };
+    };
+})();
+
+angular.module('md-steppers')
+    .directive('mdStepScroll', MdStepScroll);
+
+function MdStepScroll($parse) {
+    return {
+        restrict: 'A',
+        compile: function ($element, attr) {
+            var fn = $parse(attr.mdStepScroll, null, true);
+            return function ngEventHandler(scope, element) {
+                element.on('mousewheel', function (event) {
+                    scope.$apply(function () { fn(scope, { $event: event }); });
+                });
+            };
+        }
+    }
+}
 
 angular
     .module('md-steppers')
@@ -1010,6 +1063,7 @@ function MdSteppers() {
                       '\'md-no-scroll\':     $mdSteppersCtrl.dynamicHeight ' ,
                     '}"> ' ,
                   '<div ' ,
+                      'style="height: 100%"',   // OpenWhere changed this for angular-leaflet maps
                       'md-steppers-template="::step.template" ' ,
                       'md-connected-if="step.isActive()" ' ,
                       'md-scope="::step.parent" ' ,
@@ -1022,6 +1076,7 @@ function MdSteppers() {
         bindToController: true
     };
 }
+
 angular
     .module('md-steppers')
     .directive('mdSteppersTemplate', MdSteppersTemplate);
@@ -1059,59 +1114,6 @@ function MdSteppersTemplate($compile, $mdUtil) {
 
         function reconnect() {
             if (ctrl.enableDisconnect) $mdUtil.reconnectScope(compileScope);
-        }
-    }
-}
-
-(function () {
-    'use strict';
-
-    /**
-   * @ngdoc service
-   * @name $mdStepInkRipple
-   * @module md-steppers
-   *
-   * @description
-   * TODO DOCS
-   *
-   */
-
-    MdStepInkRipple.$inject = ["$mdInkRipple"];
-    angular.module('md-steppers')
-      .factory('$mdStepInkRipple', MdStepInkRipple);
-
-    /**
-    * @ngInject
-    */
-    function MdStepInkRipple($mdInkRipple) {
-        return {
-            attach: attach
-        };
-
-        function attach(scope, element, options) {
-            return $mdInkRipple.attach(scope, element, angular.extend({
-                center: false,
-                dimBackground: true,
-                outline: false,
-                rippleSize: 'full'
-            }, options));
-        };
-    };
-})();
-
-angular.module('md-steppers')
-    .directive('mdStepScroll', MdStepScroll);
-
-function MdStepScroll($parse) {
-    return {
-        restrict: 'A',
-        compile: function ($element, attr) {
-            var fn = $parse(attr.mdStepScroll, null, true);
-            return function ngEventHandler(scope, element) {
-                element.on('mousewheel', function (event) {
-                    scope.$apply(function () { fn(scope, { $event: event }); });
-                });
-            };
         }
     }
 }
